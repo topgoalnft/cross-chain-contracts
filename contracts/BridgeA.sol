@@ -63,6 +63,7 @@ contract BridgeA is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         IERC20 toToken = bridges[req.fromToken][req.toChainId];
         address from = _msgSender();
         require(address(toToken) != address(0), "Token or target chain is not supported");
+        require(req.to != address(0), "Target address should not be 0");
         require(req.amount > 0, "Amount must be greater than 0");
         IERC20(req.fromToken).safeTransferFrom(from, address(this), req.amount);
         emit BridgeDeposited(req.fromToken, toToken, from, req.to, block.chainid, req.toChainId, req.amount);
@@ -104,6 +105,7 @@ contract BridgeA is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     }
 
     function setSigner(address addr) external onlyOwner {
+        require(addr != address(0), "Signer should not be 0");
         signer = addr;
         emit SetSignerEvent(addr);
     }
@@ -118,6 +120,7 @@ contract BridgeA is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
     // Emergency withdrawal
     function emergencyWithdraw(address token, address to,  uint256 amount) external onlyOwner {
+        require(to != address(0), "To address should not be 0");
         if (token == address(0)) {
             (bool sent, ) = payable(to).call{value: amount}("");
             require(sent, "Token transfer failed");

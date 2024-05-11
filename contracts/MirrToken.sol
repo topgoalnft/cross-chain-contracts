@@ -50,12 +50,14 @@ contract MirrToken is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSU
     {}
 
     function setBridge(address addr) external onlyOwner {
+        require(addr != address(0), "Bridge should not be 0");
         bridge = addr;
         emit BridgeAddressChanged(addr);
     }
 
     // Emergency withdrawal
     function emergencyWithdraw(address token, address to,  uint256 amount) external onlyOwner {
+        require(to != address(0), "To address should not be 0");
         if (token == address(0)) {
             (bool sent, ) = payable(to).call{value: amount}("");
             require(sent, "Token transfer failed");
